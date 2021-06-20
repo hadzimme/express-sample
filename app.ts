@@ -2,7 +2,10 @@ import express from "express";
 import passport from "passport";
 import * as passportCustom from "passport-custom";
 import * as openApiValidator from "express-openapi-validator";
-import { Unauthorized } from "express-openapi-validator/dist/openapi.validator";
+import {
+  NotFound,
+  Unauthorized,
+} from "express-openapi-validator/dist/openapi.validator";
 
 // should be imported as a pure TS interface
 interface AuthorizedLineUser {
@@ -59,7 +62,6 @@ const customAuthorizer = (
 
 const app = express();
 app.use(
-  "/v1",
   openApiValidator.middleware({
     apiSpec: "./openapi.yaml",
   })
@@ -108,6 +110,11 @@ app.use(
     if (err instanceof Unauthorized) {
       res.status(401);
       res.json({ message: "Unauthorized" });
+      return;
+    }
+    if (err instanceof NotFound) {
+      res.status(404);
+      res.json({ message: "Not Found" });
       return;
     }
     console.error(err);

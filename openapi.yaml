@@ -3,8 +3,19 @@ info:
   title: Test API
   version: 0.0.1
 paths:
+  "/health":
+    get:
+      responses:
+        "200":
+          description: health
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
   "/v1/test":
     get:
+      security:
+        - Bearer: []
       responses:
         "200":
           description: test
@@ -36,5 +47,3 @@ components:
       type: http
       scheme: bearer
       description: LINE ID Token
-security:
-  - Bearer: []
