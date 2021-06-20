@@ -31,11 +31,7 @@ const someService = async () => {
 passport.use(
   new passportCustom.Strategy((req, done) => {
     const { authorization } = req.headers;
-    if (!authorization) {
-      done(new Error("There is no authorization header"));
-      return;
-    }
-    const idToken = authorization.split("Bearer ")[1];
+    const idToken = authorization!.split("Bearer ")[1];
     verifyLineIdToken(idToken)
       .then((user) => {
         user ? done(null, user) : done(null, false);
@@ -54,6 +50,11 @@ const customAuthorizer = (
   passport.authenticate("custom", (err, user) => {
     if (err) {
       next(err);
+    }
+    if (!user) {
+      res.status(401);
+      res.json({ message: "Unauthorized" });
+      return;
     }
     req.user = user;
     next();
@@ -84,13 +85,7 @@ app.get("/health", (_req, res) => {
 app.get(
   "/v1/test",
   handler(async (req, res) => {
-    const { user } = req;
-    if (!user) {
-      res.status(401);
-      res.json({ message: "Unauthorized" });
-      return;
-    }
-    const { userId } = user as AuthorizedLineUser;
+    const { userId } = req.user as AuthorizedLineUser;
     await someService();
     res.status(200);
     res.json({ message: `Your LINE ID is '${userId}'` });
