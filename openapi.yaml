@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: Test API
+  version: 0.0.1
+paths:
+  "/v1/test":
+    get:
+      responses:
+        "200":
+          description: test
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+components:
+  schemas:
+    Test:
+      type: object
+      properties:
+        message:
+          type: string
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      description: LINE ID Token
+security:
+  - Bearer: []
